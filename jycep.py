@@ -15,19 +15,21 @@ RSTREAM_ONLY = StreamSelector.RSTREAM_ONLY
 RSTREAM_ISTREAM_BOTH = StreamSelector.RSTREAM_ISTREAM_BOTH    
     
 class _EventListener(UpdateListener):
-    
+    """
+    Implement the UpdateListener interface to provide custom callbacks for Esper
+    EQL statements
+    """
     def __init__(self, handler):
         self.callback = handler
-        
     
     def update(self, *args):
         """
+        Per com.espertech.esper.client.UpdateListener interface
         EventBean[] newEvents, EventBean[] oldEvents
         """
-        #print('Got event:')
-        #print(args)
         
         new_events = dict(args[0][0].getUnderlying())
+        
         old_events = None
         if not args[1] is None:
             old_events = dict(args[1][0].getUnderlying())    
@@ -36,6 +38,11 @@ class _EventListener(UpdateListener):
 
         
 def EventListener(fnctn):
+    """
+    Create a listener for CEP events that calls fncn(newEvents, oldEvents) per
+    configuration.
+    newEvents, oldEvents are standard Python dictionary classes
+    """
     return _EventListener(fnctn)
         
 
@@ -55,7 +62,7 @@ class EsperEngine():
         self._esperService = None
 
     def define_event(self, eventtype, eventspec):
-        self._cnfg.addEventType(eventtype, eventspec)
+        self._esperService.getEPAdministrator().addEventType(eventtype, eventspec)
 
     def send_event(self, event, eventtype):
         self._esperService.getEPRuntime().sendEvent(event, eventtype)
