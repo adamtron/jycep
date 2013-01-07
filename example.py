@@ -23,8 +23,6 @@ if __name__ == "__main__":
                                     "P3": jfloat, 
                                     "P4": jfloat})
 
-    cep.start()
-
     #datagen = bogusd.Generator()
     #datagen.append(bogusd.Point('P1'))
     #datagen.append(bogusd.Point('P2'))

@@ -58,21 +58,22 @@ class EsperEngine():
 
     def __init__(self, engine_id):
         self.engine_id = engine_id
-        self._cnfg = Configuration()
-        self._esperService = None
+        
+        config = Configuration()
+        config.getEngineDefaults().getStreamSelection().\
+            setDefaultStreamSelector(RSTREAM_ISTREAM_BOTH) 
+        
+        self._esperService = EPServiceProviderManager.\
+            getProvider(self.engine_id, config)
+ 
+        self._esperService.initialize()
 
     def define_event(self, eventtype, eventspec):
-        self._esperService.getEPAdministrator().addEventType(eventtype, eventspec)
+        self._esperService.getEPAdministrator().getConfiguration().\
+            addEventType(eventtype, eventspec)
 
     def send_event(self, event, eventtype):
         self._esperService.getEPRuntime().sendEvent(event, eventtype)
-
-    def start(self):
-        self._cnfg.getEngineDefaults().getStreamSelection().\
-            setDefaultStreamSelector(RSTREAM_ISTREAM_BOTH)    
-        self._esperService = EPServiceProviderManager.\
-            getProvider(self.engine_id, self._cnfg)
-        self._esperService.initialize()
 
     def create_query(self, stmt):
         return self._esperService.getEPAdministrator().createEPL(stmt)
